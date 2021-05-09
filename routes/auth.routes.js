@@ -1,4 +1,4 @@
-const { Router, response } = require('express')
+const { Router} = require('express')
 const bcript = require('bcryptjs')
 const config = require('config')
 const jwt = require('jsonwebtoken')
@@ -15,6 +15,7 @@ router.post(
     ],
     async(req, res) => {
         try {
+            console.log('Body: ', req.body)       //проверка данных приходящих с фронтэнда
             const errors = validationResult(req)
 
             if (!errors.isEmpty) {
@@ -37,7 +38,7 @@ router.post(
 
             await user.save()
 
-            res.status(201).json({ message: 'Пользоватль создан' })
+            res.status(201).json({ message: 'Пользователь создан' })
 
         } catch (e) {
             res.status(500).json({ message: 'Что то пошло не так, попробуйте снова' })
@@ -73,8 +74,10 @@ router.post(
                 return res.status(400).json({ message: 'Неверный пароль, попробуйте снова' })
             }
 
-            const token = jwt.sign({ userId: user.id },
-                config.get('jwtSecret'), { expiresIn: '1h' } //время работы токена
+            const token = jwt.sign(
+                { userId: user.id },
+                config.get('jwtSecret'),
+                 { expiresIn: '1h' } //время работы токена
             )
 
             res.json({ token, userId: user.id }) //ответ пользователю. По умолчанию ответ 200
